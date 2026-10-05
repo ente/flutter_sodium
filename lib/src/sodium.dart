@@ -1436,7 +1436,8 @@ class Sodium {
               state, _c, _clenP, _m, m.length, _ad, _adlen, tag)
           .mustSucceed('crypto_secretstream_xchacha20poly1305_push');
 
-      return _c.toList(_clenP[0]);
+      // Own the bytes before the native buffer is freed below.
+      return Uint8List.fromList(_c.asTypedList(_clenP[0]));
     } finally {
       calloc.free(_c);
       calloc.free(_clenP);
@@ -1498,7 +1499,9 @@ class Sodium {
           )
           .mustSucceed('crypto_secretstream_xchacha20poly1305_pull');
 
-      return PullResult(m: _m.toList(_mlenP[0]), tag: _tagP[0]);
+      // Own the bytes before the native buffer is freed below.
+      return PullResult(
+          m: Uint8List.fromList(_m.asTypedList(_mlenP[0])), tag: _tagP[0]);
     } finally {
       calloc.free(_m);
       calloc.free(_mlenP);
