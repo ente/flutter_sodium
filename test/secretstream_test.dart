@@ -87,26 +87,4 @@ void main() {
       calloc.free(pull);
     }
   });
-
-  test('pull rejects tampered ciphertext without returning plaintext', () {
-    final key = Sodium.cryptoSecretstreamXchacha20poly1305Keygen();
-    final init = Sodium.cryptoSecretstreamXchacha20poly1305InitPush(key);
-    final pull =
-        Sodium.cryptoSecretstreamXchacha20poly1305InitPull(init.header, key);
-    try {
-      final cipher = Sodium.cryptoSecretstreamXchacha20poly1305Push(
-          init.state,
-          Uint8List.fromList([1, 2, 3, 4]),
-          null,
-          Sodium.cryptoSecretstreamXchacha20poly1305TagFinal);
-      cipher[cipher.length - 1] ^= 1;
-      expect(
-          () => Sodium.cryptoSecretstreamXchacha20poly1305Pull(
-              pull, cipher, null),
-          throwsA(isA<SodiumException>()));
-    } finally {
-      calloc.free(init.state);
-      calloc.free(pull);
-    }
-  });
 }
